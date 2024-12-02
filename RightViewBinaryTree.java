@@ -13,43 +13,50 @@ import java.util.List;
  * Check before inserting to the result list.
  * <p>
  * Can be done by both DFS and BFS
+ * <p>
+ * NOTE: Can be done via Root -> Left -> Right
+ * Just keep on updating the value in the list at level == index
  */
 
 // LC 199
 public class RightViewBinaryTree {
 
     /**
+     * Root - Right - Left
+     * <p>
      * TC: O(n)
      * SC; O(H), in the worst case == skewed tree, h == n
      *
      * @param root
      * @return
      */
-    public List<Integer> rightSideView_dfs(TreeNode root) {
+    public List<Integer> rightSideView_dfs_rootRL(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        dfs(root, res, 0);
+        dfs_rootRL(root, res, 0);
         return res;
     }
 
-    private void dfs(TreeNode root, List<Integer> res, int level) {
+    private void dfs_rootRL(TreeNode root, List<Integer> res, int level) {
         if (root == null) {
             return;
         }
         if (res.size() == level) {
             res.add(root.val);
         }
-        dfs(root.right, res, level + 1);
-        dfs(root.left, res, level + 1);
+        dfs_rootRL(root.right, res, level + 1);
+        dfs_rootRL(root.left, res, level + 1);
     }
 
     /**
+     * Root - Right - Left
+     * <p>
      * TC: O(n)
      * SC: O(leaf nodes)
      *
      * @param root
      * @return
      */
-    public List<Integer> rightSideView_bfs(TreeNode root) {
+    public List<Integer> rightSideView_bfs_rootRL(TreeNode root) {
         List<Integer> res = new ArrayList<>();
         if (root == null) {
             return res;
@@ -69,6 +76,72 @@ public class RightViewBinaryTree {
                 }
                 if (curr.left != null) {
                     q.offer(curr.left);
+                }
+            }
+            level++;
+        }
+        return res;
+    }
+
+    /**
+     * Root - Left - Right
+     * <p>
+     * TC: O(n)
+     * SC; O(H), in the worst case == skewed tree, h == n
+     *
+     * @param root
+     * @return
+     */
+    public List<Integer> rightSideView_dfs_rootLR(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        dfs_rootLR(root, res, 0);
+        return res;
+    }
+
+    private void dfs_rootLR(TreeNode root, List<Integer> res, int level) {
+        if (root == null) {
+            return;
+        }
+        if (res.size() == level) {
+            res.add(root.val);
+        } else {
+            res.set(level, root.val);
+        }
+        dfs_rootLR(root.left, res, level + 1);
+        dfs_rootLR(root.right, res, level + 1);
+    }
+
+    /**
+     * Root - Left - Right
+     * <p>
+     * TC: O(n)
+     * SC: O(leaf nodes)
+     *
+     * @param root
+     * @return
+     */
+    public List<Integer> rightSideView_bfs_rootLR(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+        Deque<TreeNode> q = new ArrayDeque<>();
+        q.offer(root);
+        int level = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode curr = q.poll();
+                if (res.size() == level) {
+                    res.add(curr.val);
+                } else {
+                    res.set(level, curr.val);
+                }
+                if (curr.left != null) {
+                    q.offer(curr.left);
+                }
+                if (curr.right != null) {
+                    q.offer(curr.right);
                 }
             }
             level++;
